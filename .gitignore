@@ -2,13 +2,13 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
 #
-/[Ll]ibrary/
-/[Tt]emp/
-/[Oo]bj/
-/[Bb]uild/
-/[Bb]uilds/
-/[Ll]ogs/
-/[Mm]emoryCaptures/
+/Procedural Dungeon Generation/[Ll]ibrary/
+/Procedural Dungeon Generation/[Tt]emp/
+/Procedural Dungeon Generation/[Oo]bj/
+/Procedural Dungeon Generation/[Bb]uild/
+/Procedural Dungeon Generation/[Bb]uilds/
+/Procedural Dungeon Generation/[Ll]ogs/
+/Procedural Dungeon Generation/[Mm]emoryCaptures/
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
