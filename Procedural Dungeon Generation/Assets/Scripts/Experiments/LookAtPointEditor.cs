@@ -1,16 +1,15 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 [CustomEditor(typeof(LookAtPoint))]
 [CanEditMultipleObjects]
 public class LookAtPointEditor : Editor
 {
-    private SerializedProperty lookAtPoint;
+    SerializedProperty lookAtPoint;
 
-    private void OnEnable()
+    void OnEnable()
     {
         lookAtPoint = serializedObject.FindProperty("lookAtPoint");
     }
@@ -19,16 +18,15 @@ public class LookAtPointEditor : Editor
     {
         serializedObject.Update();
         EditorGUILayout.PropertyField(lookAtPoint);
-
         if (lookAtPoint.vector3Value.y > (target as LookAtPoint).transform.position.y)
         {
             EditorGUILayout.LabelField("(Above this object)");
         }
-
         if (lookAtPoint.vector3Value.y < (target as LookAtPoint).transform.position.y)
         {
             EditorGUILayout.LabelField("(Below this object)");
         }
+
 
         serializedObject.ApplyModifiedProperties();
     }
@@ -39,7 +37,6 @@ public class LookAtPointEditor : Editor
 
         EditorGUI.BeginChangeCheck();
         Vector3 pos = Handles.PositionHandle(t.lookAtPoint, Quaternion.identity);
-
         if (EditorGUI.EndChangeCheck())
         {
             Undo.RecordObject(target, "Move point");
