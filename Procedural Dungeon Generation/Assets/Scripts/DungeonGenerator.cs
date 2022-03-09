@@ -152,7 +152,7 @@ public class DungeonGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// Find the center of each container and connect them to their parent containers.
+    /// Find the center of each non-leaf container and connect them to each other..
     /// </summary>
     /// <param name="node"></param>
     private void GenerateCorridorsNode(BSPTree node)
