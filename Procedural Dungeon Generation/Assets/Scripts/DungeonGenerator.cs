@@ -5,17 +5,22 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = System.Random;
 
+/// <summary>
+/// When the BSP algorithm has finished calculating the rooms, paint the rooms using a tilemap.
+/// </summary>
 public class DungeonGenerator : MonoBehaviour
 {
     public const int MIN_ROOM_DELTA = 2;
+
     [SerializeField] private int dungeonSize;
     [SerializeField] private Tile debugTile;
 
     [Range(1, 6)] [SerializeField] private int numberOfIterations;
     [Range(1, 4)] [SerializeField] private int corridorThickness;
 
-    [SerializeField] private bool shouldDebugDrawBSP;
+    [SerializeField] private bool shouldDebugDrawBSP; // Used to visualize the containers.
 
+    // A reference to the tiles used in the Custom Editor.
     [HideInInspector]
     public Tile tlTile;
     [HideInInspector]
@@ -38,21 +43,25 @@ public class DungeonGenerator : MonoBehaviour
     private Tilemap map;
     private BSPTree tree;
 
-    private void Start()
-    {
-        
-    }
-
+    /// <summary>
+    /// Request to draw gizmos of the containers.
+    /// </summary>
     private void OnDrawGizmos()
     {
         AttemptDebugDrawBSP();
     }
 
+    /// <summary>
+    /// Request to draw gizmos of the containers.
+    /// </summary>
     private void OnDrawGizmosSelected()
     {
         AttemptDebugDrawBSP();
     }
 
+    /// <summary>
+    /// Only draw gizmos if shouldDebugDrawBSP is true.
+    /// </summary>
     void AttemptDebugDrawBSP()
     {
         if (shouldDebugDrawBSP)
@@ -61,6 +70,9 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Draw gizmos of the containers, if a Binary Tree is present.
+    /// </summary>
     public void DebugDrawBSP()
     {
         if (tree == null) return; // Hasn't been generated yet.
@@ -68,6 +80,10 @@ public class DungeonGenerator : MonoBehaviour
         DebugDrawBSPNode(tree); // Recursive call.
     }
 
+    /// <summary>
+    /// Draw lines around each of the containers and its children.
+    /// </summary>
+    /// <param name="node"></param>
     public void DebugDrawBSPNode(BSPTree node)
     {
         // Container
@@ -86,6 +102,9 @@ public class DungeonGenerator : MonoBehaviour
         if (node.right != null) DebugDrawBSPNode(node.right);
     }
 
+    /// <summary>
+    /// Generate the dungeon.
+    /// </summary>
     public void GenerateDungeon()
     {
         InitReferences();
@@ -96,32 +115,46 @@ public class DungeonGenerator : MonoBehaviour
         PaintTilesAccordingToTheirNeighbours();
     }
 
+    /// <summary>
+    /// Reset references and clear the map before generating a dungeon.
+    /// </summary>
     private void InitReferences()
     {
         map = GetComponentInChildren<Tilemap>();
         map.ClearAllTiles();
-        //Random.InitState(3);
     }
+    
+    /// <summary>
+    /// Using BSP, split the container into two, keep going until all iterations are finished.
+    /// </summary>
     private void GenerateContainersUsingBSP()
     {
         tree = BSPTree.Split(numberOfIterations,
             new RectInt(0, 0, dungeonSize, dungeonSize));
     }
+
+    /// <summary>
+    /// For each container node, generate a room.
+    /// </summary>
     private void GenerateRoomsInsideContainers()
     {
         BSPTree.GenerateRoomsInsideContainersNode(tree);
     }
 
+    /// <summary>
+    /// For each parent room,
+    /// Find their center,
+    /// find a direction and connect these centers
+    /// </summary>
     private void GenerateCorridors()
     {
-        /*
-         * For each parent
-         * Find their center
-         * find a direction and connect these centers
-         */
         GenerateCorridorsNode(tree);
     }
 
+    /// <summary>
+    /// Find the center of each container and connect them to their parent containers.
+    /// </summary>
+    /// <param name="node"></param>
     private void GenerateCorridorsNode(BSPTree node)
     {
         if (node.IsInternal())
@@ -158,11 +191,18 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Call for a DFS walk through the tree to paint the tiles in each room.
+    /// </summary>
     private void FillRoomsOnTilemap()
     {
         UpdateTilemapUsingTreeNode(tree);
     }
 
+    /// <summary>
+    /// Use DFS to walk through the tree and paint tiles in each leaf node.
+    /// </summary>
+    /// <param name="node"></param>
     private void UpdateTilemapUsingTreeNode(BSPTree node)
     {
         if (node.IsLeaf())
@@ -182,6 +222,13 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// For each tile, check each neighbour surrounding the tile.
+    /// Decide, based on the position of each neighbour, which kind of tile this should be.
+    /// </summary>
+    /// <param name="i"></param>
+    /// <param name="j"></param>
+    /// <returns>Default mmTile, otherwise specified tile according to the rules</returns>
     private Tile GetTileByNeighbours(int i, int j)
     {
         var mmGridTile = map.GetTile(new Vector3Int(i, j, 0));
@@ -218,6 +265,9 @@ public class DungeonGenerator : MonoBehaviour
         return mmTile; // default case
     }
 
+    /// <summary>
+    /// Loop through all the rooms and paint each tile according to the ruleset.
+    /// </summary>
     private void PaintTilesAccordingToTheirNeighbours()
     {
         for (int i = MIN_ROOM_DELTA; i < dungeonSize; i++)

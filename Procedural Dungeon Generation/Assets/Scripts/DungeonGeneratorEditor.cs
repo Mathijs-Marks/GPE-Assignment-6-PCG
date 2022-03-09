@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// Used to create an easier, more flexible way to create the layout for the input of the tiles.
+/// </summary>
 [CustomEditor (typeof(DungeonGenerator))]
 public class DungeonGeneratorEditor : Editor
 {
@@ -19,6 +22,9 @@ public class DungeonGeneratorEditor : Editor
 
     [SerializeField] private bool showTiles = true;
 
+    /// <summary>
+    /// Reference 9 tiles (used in DungeonGenerator).
+    /// </summary>
     private void OnEnable()
     {
         tlTileProp = serializedObject.FindProperty("tlTile");
@@ -32,6 +38,10 @@ public class DungeonGeneratorEditor : Editor
         brTileProp = serializedObject.FindProperty("brTile");
     }
 
+    /// <summary>
+    /// Customize the Inspector to show an overview of the tiles used in the dungeon,
+    /// And add a button to generate a dungeon.
+    /// </summary>
     public override void OnInspectorGUI()
     {
         // Let's leverage the default implementation for later tile assignment.
@@ -41,6 +51,7 @@ public class DungeonGeneratorEditor : Editor
 
         if (showTiles)
         {
+            // Create a 9x9 grid of property fields to input the tiles in.
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("T", GUILayout.Width(20));
             EditorGUILayout.PropertyField(tlTileProp, new GUIContent(""));
@@ -65,6 +76,7 @@ public class DungeonGeneratorEditor : Editor
             serializedObject.ApplyModifiedProperties();
         }
 
+        // Create a button that executes the GenerateDungeon() method to create a dungeon.
         DungeonGenerator myScript = (DungeonGenerator)target;
         if (GUILayout.Button("Generate Dungeon"))
         {
